@@ -1,6 +1,7 @@
 package router
 
 import (
+	classHandler "smarteduhub/internal/handler/class"
 	uploadHandler "smarteduhub/internal/handler/upload"
 	userHandler "smarteduhub/internal/handler/user"
 	"smarteduhub/internal/middleware"
@@ -30,6 +31,7 @@ func InitRouter() *gin.Engine {
 	{
 		userH := userHandler.NewHandler()
 		uploadH := uploadHandler.NewHandler()
+		classH := classHandler.NewHandler()
 
 		// 公开路由 (无需登录)
 		authGroup := apiGroup.Group("/user")
@@ -58,11 +60,27 @@ func InitRouter() *gin.Engine {
 			userGroup.POST("/upload/image", uploadH.UploadImage)
 		}
 
-		// 班级相关路由 (需要登录)
 		classGroup := apiGroup.Group("/class")
-		classGroup.Use(middleware.Auth())
 		{
-			// 班级相关操作
+			classGroup.POST("/get", classH.GetByID)
+			classGroup.POST("/code", classH.GetByCode)
+		}
+		// 班级管理路由 (需要 登录+教师)
+		classGroupForTeacher := apiGroup.Group("/class/teacher")
+		classGroupForTeacher.Use(middleware.Auth(), middleware.AuthTeacher())
+		{
+			classGroupForTeacher.POST("/create", classH.Create)
+			classGroupForTeacher.POST("/list", classH.ListForTeacher)
+			classGroupForTeacher.POST("/delete", classH.DeleteForTeacherByID)
+			classGroupForTeacher.POST("/update", classH.UpdateForTeacherByID)
+		}
+		// 班级管理路由 (需要 登录+学生)
+		classGroupForStudent := apiGroup.Group("/class/student")
+		classGroupForStudent.Use(middleware.Auth(), middleware.AuthStudent())
+		{
+			classGroupForStudent.POST("/list", classH.ListForStudent)
+			classGroupForStudent.POST("/join", classH.JoinByCode)
+			classGroupForStudent.POST("/quit", classH.Quit)
 		}
 	}
 

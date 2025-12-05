@@ -42,3 +42,96 @@ func Auth() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// AuthAdmin 管理员认证中间件
+func AuthAdmin() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 1. 获取 uid
+		uid, exists := c.Get("uid")
+		if !exists {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		// 2. 从会话中获取角色
+		session, err := stputil.GetSession(uid.(string))
+		if err != nil {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		// 3. 检查角色是否为管理员
+		role, ok := session.Get("role")
+		if !ok || role != "admin" {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
+// AuthTeacher 教师认证中间件
+func AuthTeacher() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 1. 获取 uid
+		uid, exists := c.Get("uid")
+		if !exists {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		// 2. 从会话中获取角色
+		session, err := stputil.GetSession(uid.(string))
+		if err != nil {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		// 3. 检查角色是否为教师
+		role, ok := session.Get("role")
+		if !ok || role != "teacher" {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
+// AuthStudent 学生认证中间件
+func AuthStudent() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 1. 获取 uid
+		uid, exists := c.Get("uid")
+		if !exists {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		// 2. 从会话中获取角色
+		session, err := stputil.GetSession(uid.(string))
+		if err != nil {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		// 3. 检查角色是否为学生
+		role, ok := session.Get("role")
+		if !ok || role != "student" {
+			response.FailWithCode(c, errno.AuthFailed, errno.GetMsg(errno.AuthFailed))
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}

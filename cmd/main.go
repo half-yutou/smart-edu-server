@@ -10,14 +10,16 @@ import (
 )
 
 func main() {
-	// 1. 初始化配置 (TODO)
+	// 1. 初始化配置
 	auth.InitSaToken()
 
 	if err := validator.Init(); err != nil {
 		log.Fatalf("Validator init failed: %v", err)
 	}
-	// 2. 初始化数据库 (TODO)
+
+	// 2. 初始化数据库
 	database.InitDB()
+
 	// 3. 初始化路由
 	r := router.InitRouter()
 

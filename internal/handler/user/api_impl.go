@@ -1,15 +1,13 @@
 package user
 
 import (
-	"strconv"
-
 	"smarteduhub/internal/model/dto/request"
 	"smarteduhub/internal/model/dto/response"
 	"smarteduhub/internal/pkg/errno"
+	"smarteduhub/internal/pkg/utils"
 	"smarteduhub/internal/pkg/validator"
 	userService "smarteduhub/internal/service/user"
 
-	"github.com/click33/sa-token-go/stputil"
 	"github.com/gin-gonic/gin"
 )
 
@@ -85,10 +83,13 @@ func (h *handlerImpl) UpdateProfile(c *gin.Context) {
 	}
 
 	// 从 Sa-Token 获取当前用户ID
-	uid, _ := stputil.GetLoginID(c.GetHeader("Authorization"))
-	uidInt, _ := strconv.Atoi(uid)
+	uid, err := utils.GetLoginID(c)
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
 
-	if err := h.userService.UpdateProfile(int64(uidInt), &req); err != nil {
+	if err := h.userService.UpdateProfile(uid, &req); err != nil {
 		response.Fail(c, err.Error())
 		return
 	}

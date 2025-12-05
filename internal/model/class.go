@@ -13,4 +13,9 @@ type Class struct {
 	Description string    `gorm:"type:text;not null;default:''" json:"description"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+
+	// 关联关系 (用于 Preload)
+	Teacher *User    `gorm:"foreignKey:TeacherID" json:"teacher,omitempty"`
+	Subject *Subject `gorm:"foreignKey:SubjectID" json:"subject,omitempty"`
+	Grade   *Grade   `gorm:"foreignKey:GradeID" json:"grade,omitempty"`
 }

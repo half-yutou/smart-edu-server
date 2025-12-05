@@ -6,8 +6,9 @@ const (
 	Error   = -1
 
 	// 100xx 通用错误
-	InvalidParams = 10001 // 参数错误
-	AuthFailed    = 10002 // 认证失败
+	InvalidParams         = 10001 // 参数错误
+	AuthFailed            = 10002 // 认证失败
+	ErrGenerateCodeFailed = 10003 // 生成唯一码失败
 
 	// 200xx 用户模块错误
 	UserAlreadyExists = 20001 // 用户已存在
@@ -16,10 +17,13 @@ const (
 
 // 错误码对应消息
 var msgFlags = map[int]string{
-	Success:           "success",
-	Error:             "fail",
-	InvalidParams:     "参数错误",
-	AuthFailed:        "权限认证失败-请登录或权限不足",
+	Success: "success",
+	Error:   "fail",
+
+	InvalidParams:         "参数错误",
+	AuthFailed:            "权限认证失败-请登录或权限不足",
+	ErrGenerateCodeFailed: "生成唯一码失败",
+
 	UserAlreadyExists: "用户已存在",
 	UserNotFound:      "用户不存在或密码错误",
 }

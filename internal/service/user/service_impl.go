@@ -5,6 +5,7 @@ import (
 
 	"smarteduhub/internal/model"
 	"smarteduhub/internal/model/dto/request"
+	"smarteduhub/internal/model/dto/response"
 	"smarteduhub/internal/pkg/utils"
 	userRepo "smarteduhub/internal/repository/user"
 
@@ -47,7 +48,7 @@ func (s *serviceImpl) Register(req *request.RegisterRequest) error {
 	return s.repo.CreateUser(user)
 }
 
-func (s *serviceImpl) Login(req *request.LoginRequest) (*request.LoginResponse, error) {
+func (s *serviceImpl) Login(req *request.LoginRequest) (*response.LoginResponse, error) {
 	user, err := s.repo.GetUserByUsername(req.Username)
 	if err != nil {
 		return nil, err
@@ -73,12 +74,13 @@ func (s *serviceImpl) Login(req *request.LoginRequest) (*request.LoginResponse, 
 	if err == nil {
 		_ = session.Set("role", user.Role)
 	}
-
-	return &request.LoginResponse{
-		ID:    user.ID,
-		Token: token,
-		Role:  user.Role,
-		Name:  user.Nickname,
+	// 返回登录成功信息
+	return &response.LoginResponse{
+		ID:        user.ID,
+		Token:     token,
+		Role:      user.Role,
+		Nickname:  user.Nickname,
+		AvatarURL: user.AvatarURL,
 	}, nil
 }
 
@@ -95,11 +97,11 @@ func (s *serviceImpl) UpdateProfile(userID int64, req *request.UpdateProfileRequ
 		return errors.New("user not found")
 	}
 
-	if req.Nickname != "" {
-		user.Nickname = req.Nickname
+	if req.Nickname != nil {
+		user.Nickname = *req.Nickname
 	}
-	if req.AvatarURL != "" {
-		user.AvatarURL = req.AvatarURL
+	if req.AvatarURL != nil {
+		user.AvatarURL = *req.AvatarURL
 	}
 
 	return s.repo.UpdateUser(user)

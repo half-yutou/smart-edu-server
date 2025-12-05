@@ -12,14 +12,7 @@ type LoginRequest struct {
 	Password string `json:"password" binding:"required"`
 }
 
-type LoginResponse struct {
-	ID    int64  `json:"id"`
-	Token string `json:"token"`
-	Role  string `json:"role"`
-	Name  string `json:"name"`
-}
-
 type UpdateProfileRequest struct {
-	Nickname  string `json:"nickname" binding:"max=50"`
-	AvatarURL string `json:"avatar_url" binding:"omitempty,url"` // 校验是否为有效URL，允许为空
+	Nickname  *string `json:"nickname" binding:"omitempty,max=50"`
+	AvatarURL *string `json:"avatar_url" binding:"omitempty,url"` // 校验是否为有效URL，允许为空
 }
