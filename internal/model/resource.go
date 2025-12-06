@@ -15,4 +15,9 @@ type Resource struct {
 	Duration    int       `gorm:"default:0" json:"duration"`
 	CreatedAt   time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+
+	// 关联关系
+	Subject  *Subject `gorm:"foreignKey:SubjectID" json:"subject,omitempty"`
+	Grade    *Grade   `gorm:"foreignKey:GradeID" json:"grade,omitempty"`
+	Uploader *User    `gorm:"foreignKey:UploaderID" json:"uploader,omitempty"`
 }

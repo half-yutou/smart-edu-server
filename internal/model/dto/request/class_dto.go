@@ -32,3 +32,19 @@ type JoinClassByCodeRequest struct {
 type QuitClassRequest struct {
 	ClassID int64 `json:"class_id,string" binding:"required"`
 }
+
+type AddResourceToClassRequest struct {
+	ClassID    int64 `json:"class_id,string" binding:"required"`
+	ResourceID int64 `json:"resource_id,string" binding:"required"`
+}
+
+type RemoveResourceFromClassRequest struct {
+	ClassID    int64 `json:"class_id,string" binding:"required"`
+	ResourceID int64 `json:"resource_id,string" binding:"required"`
+}
+
+type ListClassResourcesRequest struct {
+	ClassID  int64 `json:"class_id,string" form:"class_id" binding:"required"`
+	Page     int   `json:"page" form:"page,default=1"`
+	PageSize int   `json:"page_size" form:"page_size,default=20"`
+}

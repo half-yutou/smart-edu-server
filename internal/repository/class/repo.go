@@ -18,4 +18,9 @@ type Repository interface {
 	ListForStudent(studentID int64) ([]*model.Class, error)
 
 	IsMember(classID int64, userID int64) (bool, error)
+
+	// 资源关联
+	AddResource(classID, resourceID int64) error
+	RemoveResource(classID, resourceID int64) error
+	ListResources(classID int64, page, pageSize int) ([]*model.Resource, int64, error)
 }

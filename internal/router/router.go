@@ -2,6 +2,7 @@ package router
 
 import (
 	classHandler "smarteduhub/internal/handler/class"
+	resourceHandler "smarteduhub/internal/handler/resource"
 	uploadHandler "smarteduhub/internal/handler/upload"
 	userHandler "smarteduhub/internal/handler/user"
 	"smarteduhub/internal/middleware"
@@ -15,6 +16,7 @@ func InitRouter() *gin.Engine {
 	// 全局中间件
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
+	r.Use(middleware.Cors()) // 跨域中间件
 
 	// 静态资源服务 (用于访问上传的图片)
 	r.Static("/uploads", "./uploads")
@@ -32,6 +34,7 @@ func InitRouter() *gin.Engine {
 		userH := userHandler.NewHandler()
 		uploadH := uploadHandler.NewHandler()
 		classH := classHandler.NewHandler()
+		resourceH := resourceHandler.NewHandler()
 
 		// 公开路由 (无需登录)
 		authGroup := apiGroup.Group("/user")
@@ -61,9 +64,11 @@ func InitRouter() *gin.Engine {
 		}
 
 		classGroup := apiGroup.Group("/class")
+		classGroup.Use(middleware.Auth()) // 基础认证
 		{
 			classGroup.POST("/get", classH.GetByID)
 			classGroup.POST("/code", classH.GetByCode)
+			classGroup.GET("/resource/list", classH.ListResources) // 班级资源列表 (老师学生通用)
 		}
 		// 班级管理路由 (需要 登录+教师)
 		classGroupForTeacher := apiGroup.Group("/class/teacher")
@@ -73,6 +78,10 @@ func InitRouter() *gin.Engine {
 			classGroupForTeacher.POST("/list", classH.ListForTeacher)
 			classGroupForTeacher.POST("/delete", classH.DeleteForTeacherByID)
 			classGroupForTeacher.POST("/update", classH.UpdateForTeacherByID)
+
+			// 班级资源管理
+			classGroupForTeacher.POST("/resource/add", classH.AddResource)
+			classGroupForTeacher.POST("/resource/remove", classH.RemoveResource)
 		}
 		// 班级管理路由 (需要 登录+学生)
 		classGroupForStudent := apiGroup.Group("/class/student")
@@ -81,6 +90,24 @@ func InitRouter() *gin.Engine {
 			classGroupForStudent.POST("/list", classH.ListForStudent)
 			classGroupForStudent.POST("/join", classH.JoinByCode)
 			classGroupForStudent.POST("/quit", classH.Quit)
+		}
+
+		// 资源相关路由
+		// 1. 公共部分 (无需登录，广场资源是公开的)
+		resourcePublicGroup := apiGroup.Group("/resource")
+		{
+			resourcePublicGroup.GET("/list", resourceH.List)
+			resourcePublicGroup.GET("/detail", resourceH.GetByID) // 使用 Query: ?id=123
+		}
+
+		// 2. 教师管理部分 (需要 登录+教师)
+		resourceTeacherGroup := apiGroup.Group("/resource/teacher")
+		resourceTeacherGroup.Use(middleware.Auth(), middleware.AuthTeacher())
+		{
+			resourceTeacherGroup.POST("/create", resourceH.Create)
+			resourceTeacherGroup.POST("/update", resourceH.Update)
+			resourceTeacherGroup.POST("/delete", resourceH.Delete)
+			resourceTeacherGroup.GET("/my", resourceH.ListMyResources)
 		}
 	}
 

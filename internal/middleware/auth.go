@@ -17,8 +17,13 @@ func Auth() gin.HandlerFunc {
 		token := c.GetHeader("Authorization")
 
 		// 2. 处理 Bearer 前缀
-		if len(token) > 7 && strings.ToUpper(token[0:7]) == "BEARER " {
-			token = token[7:]
+		// 使用 strings.Fields 自动处理空格，更健壮
+		fields := strings.Fields(token)
+		if len(fields) == 2 && strings.ToUpper(fields[0]) == "BEARER" {
+			token = fields[1]
+		} else if len(fields) == 1 {
+			// 也许前端只传了 token 没有 Bearer 前缀，直接使用
+			token = fields[0]
 		}
 
 		// 3. 判空

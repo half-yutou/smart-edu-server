@@ -211,4 +211,69 @@ func (h *handlerImpl) JoinByCode(c *gin.Context) {
 	response.SuccessWithMsg(c, "class joined successfully", nil)
 }
 
+// region 班级资源操作
+
+func (h *handlerImpl) AddResource(c *gin.Context) {
+	var req request.AddResourceToClassRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, validator.Translate(err))
+		return
+	}
+
+	uid, err := utils.GetLoginID(c)
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+
+	if err := h.service.AddResource(uid, &req); err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.SuccessWithMsg(c, "resource added to class successfully", nil)
+}
+
+func (h *handlerImpl) RemoveResource(c *gin.Context) {
+	var req request.RemoveResourceFromClassRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, validator.Translate(err))
+		return
+	}
+
+	uid, err := utils.GetLoginID(c)
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+
+	if err := h.service.RemoveResource(uid, &req); err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.SuccessWithMsg(c, "resource removed from class successfully", nil)
+}
+
+func (h *handlerImpl) ListResources(c *gin.Context) {
+	var req request.ListClassResourcesRequest
+	if err := c.ShouldBindQuery(&req); err != nil {
+		response.Fail(c, validator.Translate(err))
+		return
+	}
+
+	uid, err := utils.GetLoginID(c)
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+
+	result, err := h.service.ListResources(uid, &req)
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, result)
+}
+
+// endregion
+
 // endregion

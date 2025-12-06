@@ -147,3 +147,53 @@ func (r *repositoryImpl) IsMember(classID int64, userID int64) (bool, error) {
 		Count(&count).Error
 	return count > 0, err
 }
+
+func (r *repositoryImpl) AddResource(classID, resourceID int64) error {
+	// 检查是否已经存在
+	var count int64
+	database.DB.Model(&model.ClassResource{}).
+		Where("class_id = ? AND resource_id = ?", classID, resourceID).
+		Count(&count)
+	if count > 0 {
+		return errors.New("resource already added to this class")
+	}
+
+	return database.DB.Create(&model.ClassResource{
+		ClassID:    classID,
+		ResourceID: resourceID,
+	}).Error
+}
+
+func (r *repositoryImpl) RemoveResource(classID, resourceID int64) error {
+	return database.DB.
+		Where("class_id = ? AND resource_id = ?", classID, resourceID).
+		Delete(&model.ClassResource{}).Error
+}
+
+func (r *repositoryImpl) ListResources(classID int64, page, pageSize int) ([]*model.Resource, int64, error) {
+	var resources []*model.Resource
+	var count int64
+
+	// 构建基础查询
+	// 使用 Model() 而不是 Table()，否则 Preload 无法工作
+	db := database.DB.Model(&model.Resource{}).
+		Preload("Subject").
+		Preload("Grade").
+		Preload("Uploader").
+		Joins("JOIN class_resources ON resources.id = class_resources.resource_id").
+		Where("class_resources.class_id = ?", classID)
+
+	// 查总数
+	if err := db.Count(&count).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// 查列表
+	offset := (page - 1) * pageSize
+	err := db.Order("class_resources.added_at desc").
+		Offset(offset).
+		Limit(pageSize).
+		Find(&resources).Error
+
+	return resources, count, err
+}

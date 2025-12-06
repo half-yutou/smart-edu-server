@@ -34,3 +34,6 @@ go.sum
 
 # Environment variables
 .env
+
+# static
+/z-static-test

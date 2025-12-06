@@ -14,4 +14,10 @@ type Handler interface {
 	ListForStudent(c *gin.Context)
 	Quit(c *gin.Context)
 	JoinByCode(c *gin.Context)
+
+	// 班级资源关联
+
+	AddResource(c *gin.Context)
+	RemoveResource(c *gin.Context)
+	ListResources(c *gin.Context)
 }

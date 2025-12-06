@@ -206,6 +206,95 @@ func (s *serviceImpl) JoinByCode(studentID int64, code string) error {
 	return s.classRepo.JoinByCode(studentID, code)
 }
 
+// AddResource 老师添加资源到班级
+func (s *serviceImpl) AddResource(teacherID int64, req *request.AddResourceToClassRequest) error {
+	class, err := s.classRepo.GetByID(req.ClassID)
+	if err != nil {
+		return err
+	}
+	if class == nil {
+		return errors.New("class not found")
+	}
+	if class.TeacherID != teacherID {
+		return errors.New("permission denied: you are not the owner of this class")
+	}
+
+	return s.classRepo.AddResource(req.ClassID, req.ResourceID)
+}
+
+func (s *serviceImpl) RemoveResource(teacherID int64, req *request.RemoveResourceFromClassRequest) error {
+	class, err := s.classRepo.GetByID(req.ClassID)
+	if err != nil {
+		return err
+	}
+	if class == nil {
+		return errors.New("class not found")
+	}
+	if class.TeacherID != teacherID {
+		return errors.New("permission denied")
+	}
+
+	return s.classRepo.RemoveResource(req.ClassID, req.ResourceID)
+}
+
+func (s *serviceImpl) ListResources(operatorID int64, req *request.ListClassResourcesRequest) (*response.PageResult, error) {
+	// 权限检查：必须是班级成员（老师或学生）
+	class, err := s.classRepo.GetByID(req.ClassID)
+	if err != nil {
+		return nil, err
+	}
+	if class == nil {
+		return nil, errors.New("class not found")
+	}
+
+	// 1. 是老师？
+	isTeacher := class.TeacherID == operatorID
+	// 2. 是学生？
+	isMember, _ := s.classRepo.IsMember(req.ClassID, operatorID)
+
+	if !isTeacher && !isMember {
+		return nil, errors.New("permission denied: you are not a member of this class")
+	}
+
+	// 查询
+	list, total, err := s.classRepo.ListResources(req.ClassID, req.Page, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	// 转换
+	var infos []*response.ResourceInfo
+	for _, r := range list {
+		info := &response.ResourceInfo{
+			ID:          r.ID,
+			Title:       r.Title,
+			Description: r.Description,
+			ResType:     r.ResType,
+			FileURL:     r.FileURL,
+			SubjectID:   r.SubjectID,
+			GradeID:     r.GradeID,
+			UploaderID:  r.UploaderID,
+			Duration:    r.Duration,
+			CreatedAt:   r.CreatedAt,
+		}
+		if r.Subject != nil {
+			info.SubjectName = r.Subject.Name
+		}
+		if r.Grade != nil {
+			info.GradeName = r.Grade.Name
+		}
+		if r.Uploader != nil {
+			info.UploaderName = r.Uploader.Nickname
+		}
+		infos = append(infos, info)
+	}
+
+	return &response.PageResult{
+		List:  infos,
+		Total: total,
+	}, nil
+}
+
 // generateRandomCode 生成随机字符串，不包含查重逻辑
 func (s *serviceImpl) generateRandomCode() (string, error) {
 	code := make([]byte, length)
