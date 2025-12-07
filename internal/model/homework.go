@@ -11,4 +11,8 @@ type Homework struct {
 	Deadline  *time.Time `json:"deadline"` // 可空
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+
+	// 关联
+	Class     *Class     `gorm:"foreignKey:ClassID" json:"class,omitempty"`
+	Questions []Question `gorm:"foreignKey:HomeworkID" json:"questions,omitempty"`
 }

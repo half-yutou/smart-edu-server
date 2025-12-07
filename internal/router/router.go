@@ -2,6 +2,7 @@ package router
 
 import (
 	classHandler "smarteduhub/internal/handler/class"
+	homeworkHandler "smarteduhub/internal/handler/homework"
 	resourceHandler "smarteduhub/internal/handler/resource"
 	uploadHandler "smarteduhub/internal/handler/upload"
 	userHandler "smarteduhub/internal/handler/user"
@@ -35,6 +36,7 @@ func InitRouter() *gin.Engine {
 		uploadH := uploadHandler.NewHandler()
 		classH := classHandler.NewHandler()
 		resourceH := resourceHandler.NewHandler()
+		homeworkH := homeworkHandler.NewHandler()
 
 		// 公开路由 (无需登录)
 		authGroup := apiGroup.Group("/user")
@@ -108,6 +110,28 @@ func InitRouter() *gin.Engine {
 			resourceTeacherGroup.POST("/update", resourceH.Update)
 			resourceTeacherGroup.POST("/delete", resourceH.Delete)
 			resourceTeacherGroup.GET("/my", resourceH.ListMyResources)
+		}
+
+		// 作业相关路由 (教师)
+		homeworkTeacherGroup := apiGroup.Group("/homework/teacher")
+		homeworkTeacherGroup.Use(middleware.Auth(), middleware.AuthTeacher())
+		{
+			homeworkTeacherGroup.POST("/create", homeworkH.Create)
+			homeworkTeacherGroup.POST("/delete", homeworkH.Delete)
+			homeworkTeacherGroup.POST("/update", homeworkH.Update)
+			homeworkTeacherGroup.GET("/list", homeworkH.ListByTeacher)
+			homeworkTeacherGroup.GET("/detail", homeworkH.GetByID)
+			homeworkTeacherGroup.GET("/submissions", homeworkH.ListSubmissions)
+			homeworkTeacherGroup.POST("/grade", homeworkH.GradeSubmission)
+		}
+
+		// 作业相关路由 (学生)
+		homeworkStudentGroup := apiGroup.Group("/homework/student")
+		homeworkStudentGroup.Use(middleware.Auth(), middleware.AuthStudent())
+		{
+			homeworkStudentGroup.GET("/list", homeworkH.ListByClass)
+			homeworkStudentGroup.POST("/submit", homeworkH.Submit)
+			homeworkStudentGroup.GET("/submission", homeworkH.GetSubmission)
 		}
 	}
 

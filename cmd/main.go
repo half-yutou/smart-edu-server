@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"smarteduhub/internal/config"
 
 	"smarteduhub/internal/pkg/auth"
 	"smarteduhub/internal/pkg/database"
@@ -11,6 +12,11 @@ import (
 
 func main() {
 	// 1. 初始化配置
+	configPath := "./config.json"
+	if err := config.Load(configPath); err != nil {
+		log.Fatalf("Config load failed: %v", err)
+	}
+
 	auth.InitSaToken()
 
 	if err := validator.Init(); err != nil {

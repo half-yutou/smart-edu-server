@@ -37,3 +37,6 @@ go.sum
 
 # static
 /z-static-test
+# Config
+config.json
+/cmd/ocr_test/

@@ -13,4 +13,7 @@ type Question struct {
 	Score         int       `gorm:"not null" json:"score"`
 	OrderNum      int       `gorm:"default:0" json:"order_num"`
 	CreatedAt     time.Time `gorm:"autoCreateTime" json:"created_at"`
+
+	// 关联
+	Homework *Homework `gorm:"foreignKey:HomeworkID" json:"homework,omitempty"`
 }

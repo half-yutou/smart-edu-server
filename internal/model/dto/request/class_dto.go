@@ -26,7 +26,7 @@ type GetClassByIDRequest struct {
 }
 
 type JoinClassByCodeRequest struct {
-	Code string `json:"code" binding:"required,len=6"`
+	Code string `json:"code" binding:"required,max=10"`
 }
 
 type QuitClassRequest struct {

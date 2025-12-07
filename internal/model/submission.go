@@ -13,4 +13,8 @@ type Submission struct {
 	AIFeedback  string    `gorm:"type:text;not null;default:''" json:"ai_feedback"`
 	SubmittedAt time.Time `gorm:"autoCreateTime" json:"submitted_at"`
 	UpdatedAt   time.Time `gorm:"autoUpdateTime" json:"updated_at"`
+
+	// 关联
+	Details []SubmissionDetail `gorm:"foreignKey:SubmissionID" json:"details,omitempty"`
+	Student *User              `gorm:"foreignKey:StudentID" json:"student,omitempty"`
 }
