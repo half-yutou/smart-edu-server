@@ -94,9 +94,10 @@ func UploadFile(file *multipart.FileHeader) (string, error) {
 	}
 
 	// 上传
-	_, err = client.PutObject(context.Background(), config.Global.OSS.BucketName, objectName, src, file.Size, minio.PutObjectOptions{
-		ContentType: contentType,
-	})
+	_, err = client.PutObject(context.Background(),
+		config.Global.OSS.BucketName, objectName, src, file.Size, minio.PutObjectOptions{
+			ContentType: contentType,
+		})
 	if err != nil {
 		return "", err
 	}
@@ -107,6 +108,7 @@ func UploadFile(file *multipart.FileHeader) (string, error) {
 		protocol = "https"
 	}
 
-	url := fmt.Sprintf("%s://%s/%s/%s", protocol, config.Global.OSS.Endpoint, config.Global.OSS.BucketName, objectName)
+	url := fmt.Sprintf("%s://%s/%s/%s",
+		protocol, config.Global.OSS.Endpoint, config.Global.OSS.BucketName, objectName)
 	return url, nil
 }

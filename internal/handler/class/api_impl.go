@@ -213,6 +213,8 @@ func (h *handlerImpl) JoinByCode(c *gin.Context) {
 	response.SuccessWithMsg(c, "class joined successfully", nil)
 }
 
+// endregion
+
 // region 班级资源操作
 
 func (h *handlerImpl) AddResource(c *gin.Context) {
@@ -301,7 +303,5 @@ func (h *handlerImpl) ListMembers(c *gin.Context) {
 	}
 	response.Success(c, members)
 }
-
-// endregion
 
 // endregion

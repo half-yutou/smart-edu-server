@@ -2,6 +2,7 @@ package router
 
 import (
 	classHandler "smarteduhub/internal/handler/class"
+	danmakuHandler "smarteduhub/internal/handler/danmaku"
 	homeworkHandler "smarteduhub/internal/handler/homework"
 	resourceHandler "smarteduhub/internal/handler/resource"
 	uploadHandler "smarteduhub/internal/handler/upload"
@@ -37,6 +38,7 @@ func InitRouter() *gin.Engine {
 		classH := classHandler.NewHandler()
 		resourceH := resourceHandler.NewHandler()
 		homeworkH := homeworkHandler.NewHandler()
+		danmakuH := danmakuHandler.NewHandler()
 
 		// 公开路由 (无需登录)
 		authGroup := apiGroup.Group("/user")
@@ -114,7 +116,16 @@ func InitRouter() *gin.Engine {
 			resourceTeacherGroup.GET("/my", resourceH.ListMyResources)
 		}
 
-		// 作业相关路由 (教师)
+		// 弹幕相关路由
+		danmakuGroup := apiGroup.Group("/danmaku")
+		{
+			danmakuGroup.GET("/list", danmakuH.List)
+			// 发送弹幕需要登录
+			danmakuGroup.POST("/send", middleware.Auth(), danmakuH.Send)
+		}
+
+		// 作业相关路由
+		// 1. 教师管理部分
 		homeworkTeacherGroup := apiGroup.Group("/homework/teacher")
 		homeworkTeacherGroup.Use(middleware.Auth(), middleware.AuthTeacher())
 		{

@@ -12,7 +12,6 @@ type Handler interface {
 	Submit(c *gin.Context)
 	GetSubmission(c *gin.Context)
 
-	// Teacher
 	ListSubmissions(c *gin.Context)
 	GradeSubmission(c *gin.Context)
 }
