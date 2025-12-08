@@ -295,6 +295,22 @@ func (s *serviceImpl) ListResources(operatorID int64, req *request.ListClassReso
 	}, nil
 }
 
+func (s *serviceImpl) ListMembers(teacherID int64, classID int64) ([]*model.User, error) {
+	// 1. 检查权限 (必须是该班级的老师)
+	class, err := s.classRepo.GetByID(classID)
+	if err != nil {
+		return nil, err
+	}
+	if class == nil {
+		return nil, errors.New("class not found")
+	}
+	if class.TeacherID != teacherID {
+		return nil, errors.New("permission denied")
+	}
+
+	return s.classRepo.ListMembers(classID)
+}
+
 // generateRandomCode 生成随机字符串，不包含查重逻辑
 func (s *serviceImpl) generateRandomCode() (string, error) {
 	code := make([]byte, length)

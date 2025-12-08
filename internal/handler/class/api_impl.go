@@ -1,6 +1,8 @@
 package class
 
 import (
+	"strconv"
+
 	"smarteduhub/internal/model/dto/request"
 	"smarteduhub/internal/model/dto/response"
 	"smarteduhub/internal/pkg/utils"
@@ -272,6 +274,32 @@ func (h *handlerImpl) ListResources(c *gin.Context) {
 		return
 	}
 	response.Success(c, result)
+}
+
+func (h *handlerImpl) ListMembers(c *gin.Context) {
+	classIDStr := c.Query("class_id")
+	if classIDStr == "" {
+		response.Fail(c, "class_id is required")
+		return
+	}
+	classID, err := strconv.ParseInt(classIDStr, 10, 64)
+	if err != nil {
+		response.Fail(c, "invalid class_id")
+		return
+	}
+
+	uid, err := utils.GetLoginID(c)
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+
+	members, err := h.service.ListMembers(uid, classID)
+	if err != nil {
+		response.Fail(c, err.Error())
+		return
+	}
+	response.Success(c, members)
 }
 
 // endregion

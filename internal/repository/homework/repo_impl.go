@@ -63,7 +63,8 @@ func (r *repositoryImpl) Update(homework *model.Homework) error {
 func (r *repositoryImpl) ListByCreator(creatorID int64) ([]*model.Homework, error) {
 	var list []*model.Homework
 	err := database.DB.
-		Preload("Class"). // 关联班级信息
+		Preload("Class").     // 关联班级信息
+		Preload("Questions"). // 关联题目信息
 		Where("creator_id = ?", creatorID).
 		Order("created_at desc").
 		Find(&list).Error

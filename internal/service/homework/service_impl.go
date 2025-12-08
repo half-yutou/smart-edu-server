@@ -7,6 +7,7 @@ import (
 	"smarteduhub/internal/config"
 	"smarteduhub/internal/model"
 	"smarteduhub/internal/model/dto/request"
+	"smarteduhub/internal/model/dto/response"
 	"smarteduhub/internal/pkg/ai"
 	"smarteduhub/internal/pkg/ocr"
 	classRepo "smarteduhub/internal/repository/class"
@@ -148,7 +149,7 @@ func (s *serviceImpl) ListByCreator(creatorID int64) ([]*model.Homework, error) 
 	return s.homeworkRepo.ListByCreator(creatorID)
 }
 
-func (s *serviceImpl) ListByClass(studentID, classID int64) ([]*model.Homework, error) {
+func (s *serviceImpl) ListByClass(studentID, classID int64) ([]*response.HomeworkListItem, error) {
 	// 校验学生是否在班级中
 	isMember, err := s.classRepo.IsMember(classID, studentID)
 	if err != nil {
@@ -158,7 +159,27 @@ func (s *serviceImpl) ListByClass(studentID, classID int64) ([]*model.Homework, 
 		return nil, errors.New("you are not a member of this class")
 	}
 
-	return s.homeworkRepo.ListByClass(classID)
+	homeworks, err := s.homeworkRepo.ListByClass(classID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*response.HomeworkListItem, 0, len(homeworks))
+	for _, hw := range homeworks {
+		item := &response.HomeworkListItem{
+			Homework:      hw,
+			StudentStatus: "unsubmitted",
+		}
+
+		// Check submission status
+		sub, _ := s.homeworkRepo.GetSubmission(hw.ID, studentID)
+		if sub != nil {
+			item.StudentStatus = sub.Status
+		}
+		result = append(result, item)
+	}
+
+	return result, nil
 }
 
 func (s *serviceImpl) Submit(studentID int64, req *request.SubmitHomeworkRequest) error {

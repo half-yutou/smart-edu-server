@@ -62,7 +62,7 @@ func InitRouter() *gin.Engine {
 			userGroup.POST("/user/profile", userH.UpdateProfile)
 
 			// 上传头像相关
-			userGroup.POST("/upload/image", uploadH.UploadImage)
+			// userGroup.POST("/upload/image", uploadH.UploadImage)
 		}
 
 		classGroup := apiGroup.Group("/class")
@@ -80,6 +80,7 @@ func InitRouter() *gin.Engine {
 			classGroupForTeacher.POST("/list", classH.ListForTeacher)
 			classGroupForTeacher.POST("/delete", classH.DeleteForTeacherByID)
 			classGroupForTeacher.POST("/update", classH.UpdateForTeacherByID)
+			classGroupForTeacher.GET("/members", classH.ListMembers) // 班级成员列表
 
 			// 班级资源管理
 			classGroupForTeacher.POST("/resource/add", classH.AddResource)
@@ -106,6 +107,7 @@ func InitRouter() *gin.Engine {
 		resourceTeacherGroup := apiGroup.Group("/resource/teacher")
 		resourceTeacherGroup.Use(middleware.Auth(), middleware.AuthTeacher())
 		{
+			resourceTeacherGroup.POST("/upload", uploadH.UploadFile) // 移动到这里
 			resourceTeacherGroup.POST("/create", resourceH.Create)
 			resourceTeacherGroup.POST("/update", resourceH.Update)
 			resourceTeacherGroup.POST("/delete", resourceH.Delete)

@@ -17,6 +17,14 @@ type Config struct {
 			BaseURL string `json:"base_url"`
 		} `json:"deepseek"`
 	} `json:"ai"`
+
+	OSS struct {
+		Endpoint        string `json:"endpoint"`
+		AccessKeyID     string `json:"access_key_id"`
+		SecretAccessKey string `json:"secret_access_key"`
+		BucketName      string `json:"bucket_name"`
+		UseSSL          bool   `json:"use_ssl"`
+	} `json:"oss"`
 }
 
 var Global Config

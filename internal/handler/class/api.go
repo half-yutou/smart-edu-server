@@ -7,6 +7,7 @@ type Handler interface {
 	ListForTeacher(c *gin.Context)
 	DeleteForTeacherByID(c *gin.Context)
 	UpdateForTeacherByID(c *gin.Context)
+	ListMembers(c *gin.Context)
 
 	GetByCode(c *gin.Context)
 	GetByID(c *gin.Context)

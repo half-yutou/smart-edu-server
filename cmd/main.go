@@ -2,10 +2,11 @@ package main
 
 import (
 	"log"
-	"smarteduhub/internal/config"
 
+	"smarteduhub/internal/config"
 	"smarteduhub/internal/pkg/auth"
 	"smarteduhub/internal/pkg/database"
+	"smarteduhub/internal/pkg/oss"
 	"smarteduhub/internal/pkg/validator"
 	"smarteduhub/internal/router"
 )
@@ -18,6 +19,8 @@ func main() {
 	}
 
 	auth.InitSaToken()
+
+	oss.Init()
 
 	if err := validator.Init(); err != nil {
 		log.Fatalf("Validator init failed: %v", err)

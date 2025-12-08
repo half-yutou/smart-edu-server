@@ -197,3 +197,12 @@ func (r *repositoryImpl) ListResources(classID int64, page, pageSize int) ([]*mo
 
 	return resources, count, err
 }
+
+func (r *repositoryImpl) ListMembers(classID int64) ([]*model.User, error) {
+	var users []*model.User
+	err := database.DB.Model(&model.User{}).
+		Joins("JOIN class_members ON users.id = class_members.student_id").
+		Where("class_members.class_id = ?", classID).
+		Find(&users).Error
+	return users, err
+}

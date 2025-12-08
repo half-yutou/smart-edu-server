@@ -91,6 +91,12 @@ func (s *serviceImpl) Update(operatorID int64, req *request.UpdateResourceReques
 	if req.GradeID != nil {
 		res.GradeID = *req.GradeID
 	}
+	if req.ResType != nil {
+		res.ResType = *req.ResType
+	}
+	if req.FileURL != nil {
+		res.FileURL = *req.FileURL
+	}
 
 	return s.repo.Update(res)
 }
