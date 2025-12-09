@@ -25,6 +25,14 @@ type Config struct {
 		BucketName      string `json:"bucket_name"`
 		UseSSL          bool   `json:"use_ssl"`
 	} `json:"oss"`
+
+	Database struct {
+		Host     string `json:"host"`
+		Port     int    `json:"port"`
+		User     string `json:"user"`
+		Password string `json:"password"`
+		DBName   string `json:"dbname"`
+	} `json:"database"`
 }
 
 var Global Config

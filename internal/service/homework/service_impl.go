@@ -270,12 +270,12 @@ func (s *serviceImpl) gradeSubmissionAsync(sub *model.Submission, hw *model.Home
 		}
 
 		// A. OCR 识别
-		if detail.AnswerImageURL != "" && detail.AnswerContent == "" {
+		if detail.AnswerImageURL != "" {
 			text, err := s.ocrClient.RecognizeBasic(detail.AnswerImageURL)
 			if err == nil {
-				detail.AnswerContent = text
+				detail.AnswerContent += text
 			} else {
-				detail.AnswerContent = "[OCR Failed]"
+				detail.AnswerContent += "[OCR Failed]"
 			}
 		}
 

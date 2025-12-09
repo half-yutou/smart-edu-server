@@ -69,7 +69,8 @@ func (c *deepSeekClient) GradeQuestion(q, std, stu string, fullScore int) (*Grad
 
 	// 2. 构造请求
 	reqBody := chatRequest{
-		Model: "deepseek-chat",
+		// Model: "deepseek-chat",
+		Model: "deepseek-reasoner",
 		Messages: []message{
 			{Role: "system", Content: "You are a helpful assistant that outputs only JSON."},
 			{Role: "user", Content: prompt},

@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
-	"smarteduhub/internal/pkg/oss"
 
 	"smarteduhub/internal/config"
 	"smarteduhub/internal/pkg/auth"
 	"smarteduhub/internal/pkg/database"
+	"smarteduhub/internal/pkg/oss"
 	"smarteduhub/internal/pkg/validator"
 	"smarteduhub/internal/router"
 )

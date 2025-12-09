@@ -16,7 +16,6 @@ type Service interface {
 	Submit(studentID int64, req *request.SubmitHomeworkRequest) error
 	GetSubmission(homeworkID, studentID int64) (*model.Submission, error)
 
-	// Teacher
 	ListSubmissions(teacherID, homeworkID int64) ([]*model.Submission, error)
 	GradeSubmission(teacherID int64, req *request.ManualGradeRequest) error
 }

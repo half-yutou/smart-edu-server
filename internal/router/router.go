@@ -47,6 +47,13 @@ func InitRouter() *gin.Engine {
 			authGroup.POST("/login", userH.Login)
 		}
 
+		// 通用上传路由 (需要登录)
+		uploadGroup := apiGroup.Group("/upload")
+		uploadGroup.Use(middleware.Auth())
+		{
+			uploadGroup.POST("/image", uploadH.UploadFile)
+		}
+
 		// 用户相关路由 (需要登录)
 		userGroup := apiGroup.Group("/user")
 		userGroup.Use(middleware.Auth())
@@ -62,9 +69,6 @@ func InitRouter() *gin.Engine {
 			// 用户相关
 			userGroup.POST("/user/logout", userH.Logout)
 			userGroup.POST("/user/profile", userH.UpdateProfile)
-
-			// 上传头像相关
-			// userGroup.POST("/upload/image", uploadH.UploadImage)
 		}
 
 		classGroup := apiGroup.Group("/class")
