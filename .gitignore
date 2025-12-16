@@ -40,3 +40,4 @@ go.sum
 # Config
 config.json
 /cmd/ocr_test/
+SmartEduHub_server.iml
